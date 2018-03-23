@@ -1,24 +1,49 @@
 from random import randint, choice, random
+from statistics import mean
 
 POPULATION_SIZE = 50
 CHANCE_OF_CROSSOVER = 0.6
-k = 2  # For binary tournament selection
+NUM_MOST_FIT = 2
 
 
 def main():
-
     # Initialization
     population = get_population()
-    print(population)
 
-    # Selection
-    parents = get_parents(population)
-    print(parents)
+    children = []
 
-    # Recombination
-    children = get_children(parents)
+    num_pairs_of_children = (POPULATION_SIZE - NUM_MOST_FIT) / 2
 
-    print(children)
+    for _ in range(int(num_pairs_of_children)):
+        # Selection
+        parents = get_parents(population)
+
+        # Recombination
+        two_children = get_children(parents)
+        children += two_children
+
+    # Elitism Replacement - Keep best two individuals in population
+    most_fit = get_most_fit_individuals(population)
+
+    next_generation = children + most_fit
+
+    print(get_avg_fitness(population))
+    print(get_avg_fitness(next_generation))
+
+
+def get_avg_fitness(population):
+    fitnesses = get_fitnesses(population)
+    return mean(fitnesses)
+
+
+def get_most_fit_individuals(population):
+    fitnesses = get_fitnesses(population)
+    most_fit = []
+    for i in range(NUM_MOST_FIT):
+        the_fittest = max(fitnesses)
+        fittest_idx = fitnesses.index(the_fittest)
+        most_fit.append(population[fittest_idx])
+    return most_fit
 
 
 def get_children(parents):
@@ -33,9 +58,9 @@ def mutate(child):
     """Possibly flip each bit of child - on average one bit will be flipped"""
     length = len(child)
     child = list(child)
-    CHANCE_MUTATION = 1 / length
+    chance_mutation = 1 / length
     for i in range(length):
-        if random() > CHANCE_MUTATION:
+        if random() > chance_mutation:
             continue
         if child[i] == '1':
             child[i] = '0'
@@ -68,15 +93,19 @@ def get_parents(population):
 
 def get_parent(population):
     """Use binary tournament selection to get a parent from the population"""
-    samples = get_samples(population, k)
-    fitnesses = [fitness_function(sample) for sample in samples]
+    samples = get_samples(population)
+    fitnesses = get_fitnesses(samples)
     max_fitness = max(fitnesses)
-    idx = fitnesses.index(max_fitness)
-    return samples[idx]
+    fittest_idx = fitnesses.index(max_fitness)
+    return samples[fittest_idx]
 
 
-def get_samples(population, k):
-    """Returns list of k samples from population"""
+def get_fitnesses(population):
+    return [fitness_function(individual) for individual in population]
+
+
+def get_samples(population, k=2):
+    """Returns list of k samples from the population"""
     samples = []
     for _ in range(k):
         sample = choice(population)
