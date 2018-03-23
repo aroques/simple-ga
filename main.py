@@ -1,4 +1,4 @@
-from random import randint, choice, random
+from random import randint, random, sample
 from statistics import mean
 
 POPULATION_SIZE = 50
@@ -10,30 +10,52 @@ def main():
     # Initialization
     population = get_population()
 
-    children = []
+    num_avg_same = num_generations = 0
 
-    num_pairs_of_children = (POPULATION_SIZE - NUM_MOST_FIT) / 2
+    print_stats('-- Starting Population --', population)
 
-    for _ in range(int(num_pairs_of_children)):
-        # Selection
-        parents = get_parents(population)
+    while num_avg_same < 3:
+        num_generations += 1
 
-        # Recombination
-        two_children = get_children(parents)
-        children += two_children
+        children = []
+        num_pairs_of_children = (POPULATION_SIZE - NUM_MOST_FIT) / 2
+        for _ in range(int(num_pairs_of_children)):
+            # Selection
+            parents = get_parents(population)
 
-    # Elitism Replacement - Keep best two individuals in population
-    most_fit = get_most_fit_individuals(population)
+            # Recombination
+            two_children = get_children(parents)
+            children += two_children
 
-    next_generation = children + most_fit
+        # Elitism Replacement - Keep the N=2 fittest individuals in population
+        most_fit = get_most_fit_individuals(population)
 
-    print(get_avg_fitness(population))
-    print(get_avg_fitness(next_generation))
+        next_generation = children + most_fit
+
+        num_avg_same += compare_populations(population, next_generation)
+
+        population = next_generation
+
+    print('Number of Generations: {}'.format(num_generations))
+    print_stats('-- Final Generation --', next_generation)
 
 
-def get_avg_fitness(population):
+def compare_populations(p1, p2):
+    """Returns 1 if the two populations have the same fitness"""
+    p1_fitnesses = get_fitnesses(p1)
+    p2_fitnesses = get_fitnesses(p2)
+    if mean(p1_fitnesses) == mean(p2_fitnesses):
+        return 1
+    else:
+        return 0
+
+
+def print_stats(title, population):
     fitnesses = get_fitnesses(population)
-    return mean(fitnesses)
+    print(title)
+    print('Min: {}'.format(min(fitnesses)))
+    print('Max: {}'.format(max(fitnesses)))
+    print('Avg: {}'.format(mean(fitnesses)))
 
 
 def get_most_fit_individuals(population):
@@ -93,24 +115,15 @@ def get_parents(population):
 
 def get_parent(population):
     """Use binary tournament selection to get a parent from the population"""
-    samples = get_samples(population)
-    fitnesses = get_fitnesses(samples)
+    s = sample(population, 2)
+    fitnesses = get_fitnesses(s)
     max_fitness = max(fitnesses)
     fittest_idx = fitnesses.index(max_fitness)
-    return samples[fittest_idx]
+    return s[fittest_idx]
 
 
 def get_fitnesses(population):
     return [fitness_function(individual) for individual in population]
-
-
-def get_samples(population, k=2):
-    """Returns list of k samples from the population"""
-    samples = []
-    for _ in range(k):
-        sample = choice(population)
-        samples.append(sample)
-    return samples
 
 
 def fitness_function(binary_string):
