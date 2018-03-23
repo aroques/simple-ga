@@ -30,6 +30,7 @@ def get_children(parents):
 
 
 def mutate(child):
+    """Possibly flip each bit of child - on average one bit will be flipped"""
     length = len(child)
     child = list(child)
     CHANCE_MUTATION = 1 / length
