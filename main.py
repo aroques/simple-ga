@@ -1,6 +1,7 @@
-from random import randint, choice
+from random import randint, choice, random
 
 POPULATION_SIZE = 50
+CHANCE_OF_CROSSOVER = 0.6
 k = 2  # For binary tournament selection
 
 
@@ -14,6 +15,47 @@ def main():
     parents = get_parents(population)
     print(parents)
 
+    # Recombination
+    children = get_children(parents)
+
+    print(children)
+
+
+def get_children(parents):
+    if random() <= CHANCE_OF_CROSSOVER:
+        children = uniform_crossover(parents)
+    else:
+        children = parents
+    return [mutate(child) for child in children]
+
+
+def mutate(child):
+    length = len(child)
+    child = list(child)
+    CHANCE_MUTATION = 1 / length
+    for i in range(length):
+        if random() > CHANCE_MUTATION:
+            continue
+        if child[i] == '1':
+            child[i] = '0'
+        else:
+            child[i] = '1'
+    return ''.join(child)
+
+
+def uniform_crossover(parents):
+    """Uses uniform crossover to get two children from two parents"""
+    string_len = len(parents[0])
+    child = ''
+    for i in range(string_len):
+        parent_num = randint(0, 1)
+        child += parents[parent_num][i]
+    return child, invert_binary_string(child)
+
+
+def invert_binary_string(binary_string):
+    return ''.join('1' if bit == '0' else '0' for bit in binary_string)
+
 
 def get_parents(population):
     parents = []
@@ -25,14 +67,20 @@ def get_parents(population):
 
 def get_parent(population):
     """Use binary tournament selection to get a parent from the population"""
-    samples = []
-    for _ in range(k):
-        sample = choice(population)
-        samples.append(sample)
+    samples = get_samples(population, k)
     fitnesses = [fitness_function(sample) for sample in samples]
     max_fitness = max(fitnesses)
     idx = fitnesses.index(max_fitness)
     return samples[idx]
+
+
+def get_samples(population, k):
+    """Returns list of k samples from population"""
+    samples = []
+    for _ in range(k):
+        sample = choice(population)
+        samples.append(sample)
+    return samples
 
 
 def fitness_function(binary_string):
