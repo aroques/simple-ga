@@ -1,20 +1,22 @@
 from random import randint, random, sample, shuffle
 from statistics import mean
+from sys import maxsize
 
 CHANCE_OF_CROSSOVER = 0.6
 NUM_MOST_FIT = 2
 NUM_RUNS = 5
 MAX_POP_SIZE = 1000000
 
-# str_size = 20 then population size = 655,360, 327,680, 655,360, 655,360
 
 def main():
-
-    found_global_optimum_cnt = 0
     population_size = 10
     string_size = get_string_size_from_user()
+    lower_bound = 0
+    upper_bound = maxsize
+    has_succeeded = False
 
-    while found_global_optimum_cnt < NUM_RUNS:
+    while upper_bound - lower_bound > 2:
+
         found_global_optimum_cnt = 0
 
         # Initialization
@@ -27,12 +29,22 @@ def main():
             # Replacement
             next_generation = get_next_generation(population, children)
 
-            found_global_optimum_cnt += found_global_optimum(population)
-
             population = next_generation
 
-        # Double the population size
-        population_size *= 2
+            found_global_optimum_cnt += found_global_optimum(population)
+
+        if found_global_optimum_cnt > 0:
+            # Success
+            upper_bound = population_size
+            population_size = midpoint(lower_bound, upper_bound)
+            has_succeeded = True
+        else:
+            # Failure
+            lower_bound = population_size
+            if has_succeeded:
+                population_size = midpoint(lower_bound, upper_bound)
+            else:
+                population_size *= 2
 
         if population_size >= MAX_POP_SIZE:
             print('Algorithm failed!')
@@ -40,6 +52,10 @@ def main():
             break
 
     print('Population size: {}'.format(population_size))
+
+
+def midpoint(p1, p2):
+    return int((p1 + p2) / 2)
 
 
 def get_children(population, population_size):
