@@ -24,7 +24,7 @@ The population size starts at size 10. Then, the GA is ran 5 times and each time
 | String Size	| Run 1	 | Run 2  | Run 3  | Avg    |
 |:-----------:|:------:|:------:|:------:|:------:|
 | 20          | 4,599  | 4,799  | 36,082 | 15,160 |
-| 50          |        |        |        |        |
+| 50          | FAILED | FAILED | FAILED | FAILED |
 
 
 #### To run this program:
