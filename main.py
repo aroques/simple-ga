@@ -5,7 +5,7 @@ from sys import maxsize
 CHANCE_OF_CROSSOVER = 0.6
 NUM_MOST_FIT = 2
 NUM_RUNS = 5
-MAX_POP_SIZE = maxsize
+MAX_POP_SIZE = 81920
 
 
 def main():
