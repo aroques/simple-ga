@@ -1,43 +1,75 @@
-from random import randint, random, sample
+from random import randint, random, sample, shuffle
 from statistics import mean
 
-POPULATION_SIZE = 50
 CHANCE_OF_CROSSOVER = 0.6
 NUM_MOST_FIT = 2
+NUM_RUNS = 5
+MAX_POP_SIZE = 1000000
 
+# str_size = 20 then population size = 655,360, 327,680, 655,360, 655,360
 
 def main():
-    # Initialization
-    population = get_population()
 
-    num_avg_same = num_generations = 0
+    found_global_optimum_cnt = 0
+    population_size = 10
+    string_size = get_string_size_from_user()
 
-    print_stats('-- Starting Population --', population)
+    while found_global_optimum_cnt < NUM_RUNS:
+        found_global_optimum_cnt = 0
 
-    while num_avg_same < 3:
-        num_generations += 1
+        # Initialization
+        population = get_population(population_size, string_size)
 
-        children = []
-        num_pairs_of_children = (POPULATION_SIZE - NUM_MOST_FIT) / 2
-        for _ in range(int(num_pairs_of_children)):
-            # Selection
-            parents = get_parents(population)
+        for _ in range(NUM_RUNS):
+            # Selection and Recombination
+            children = get_children(population, population_size)
 
-            # Recombination
-            two_children = get_children(parents)
-            children += two_children
+            # Replacement
+            next_generation = get_next_generation(population, children)
 
-        # Elitism Replacement - Keep the N=2 fittest individuals in population
-        most_fit = get_most_fit_individuals(population)
+            found_global_optimum_cnt += found_global_optimum(population)
 
-        next_generation = children + most_fit
+            population = next_generation
 
-        num_avg_same += compare_populations(population, next_generation)
+        # Double the population size
+        population_size *= 2
 
-        population = next_generation
+        if population_size >= MAX_POP_SIZE:
+            print('Algorithm failed!')
+            population_size /= 2
+            break
 
-    print('Number of Generations: {}'.format(num_generations))
-    print_stats('-- Final Generation --', next_generation)
+    print('Population size: {}'.format(population_size))
+
+
+def get_children(population, population_size):
+    """Gets a list of all children for the next generation"""
+    children = []
+    num_pairs_of_children = (population_size - NUM_MOST_FIT) / 2
+    for _ in range(int(num_pairs_of_children)):
+        # Selection
+        parents = get_parents(population)
+
+        # Recombination
+        two_children = reproduce(parents)
+        children += two_children
+
+    return children
+
+
+def get_next_generation(population, children):
+    """Elitism replacement - keep the N most fit individuals in the population"""
+    most_fit = get_most_fit_individuals(population)
+    next_generation = children + most_fit
+    return next_generation
+
+
+def found_global_optimum(population):
+    fitnesses = get_fitnesses(population)
+    if max(fitnesses) == len(population[0]):
+        return 1
+    else:
+        return 0
 
 
 def compare_populations(p1, p2):
@@ -52,6 +84,7 @@ def compare_populations(p1, p2):
 
 def print_stats(title, population):
     fitnesses = get_fitnesses(population)
+    print()
     print(title)
     print('Min: {}'.format(min(fitnesses)))
     print('Max: {}'.format(max(fitnesses)))
@@ -68,7 +101,7 @@ def get_most_fit_individuals(population):
     return most_fit
 
 
-def get_children(parents):
+def reproduce(parents):
     if random() <= CHANCE_OF_CROSSOVER:
         children = uniform_crossover(parents)
     else:
@@ -131,10 +164,9 @@ def fitness_function(binary_string):
     return binary_string.count('1')
 
 
-def get_population():
+def get_population(population_size, string_size):
     population = []
-    string_size = get_positive_int_from_user()
-    for _ in range(POPULATION_SIZE):
+    for _ in range(population_size):
         binary_string = get_random_binary_string(string_size)
         population.append(binary_string)
     return population
@@ -147,11 +179,11 @@ def get_random_binary_string(string_size):
     return binary_str
 
 
-def get_positive_int_from_user():
+def get_string_size_from_user():
     n = -1
     while n < 1:
         try:
-            n = int(input('Enter a positive integer:'))
+            n = int(input('Enter a string size (positive integer): '))
         except ValueError as e:
             print('Please enter a positive integer')
     return n
