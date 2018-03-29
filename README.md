@@ -18,13 +18,13 @@ For a population of size N, N-2 children are generated. All but the best 2 paren
 The fitness function is ***onemax***, which is the sum of 1s in the binary string.
 
 ### Finding the Minimum Population Size
-The population size starts at size 10. Then, the GA is ran 5 times and each time we check to see if the global optimum is present in the new generation. If the global optimum is not present in each of the 5 generations, then we then double the population size and repeat the above procedure. Once we find the smallest population size where the global optimum is present in each of the 5 generations we have found an upper bound. Next, we take the midpoint betweem this upperbound and the lower bound where it last failed. We repeat this procedure until we find a minimum population size. This procedure of finding the minimum population size to solve a problem is called ***bisection***.
+The population size starts at size 10. Then, the GA is ran 5 times and each time we check to see if the global optimum is present in the new generation. If the global optimum is not present in each of the 5 generations, then we then double the population size and repeat the above procedure. Once we find the smallest population size where the global optimum is present in each of the 5 generations we have found an upper bound. Next, we take the midpoint between this upper-bound and the lower-bound where it last failed. We repeat this procedure until we find a minimum population size. This procedure of finding the minimum population size to solve a problem is called ***bisection***.
 
-### Minumum Population Sizes for Different String Sizes
-| String Size	| Run 1	 | Run 2  | Run 3  | Avg    |
-|:-----------:|:------:|:------:|:------:|:------:|
-| 20          | 4,599  | 4,799  | 36,082 | 15,160 |
-| 50          | FAILED | FAILED | FAILED | FAILED |
+### Minimum Population Sizes for Different String Sizes
+| String Size |  Run 1  |  Run 2  |  Run 3  |  Avg   |
+|:-----------:|:-------:|:-------:|:-------:|:------:|
+| 20          | 9       | 7       | 12      | 9.33   |
+| 50          | 14      | 16      | 14      | 14.67  |
 
 
 #### To run this program:

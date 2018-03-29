@@ -16,24 +16,17 @@ def main():
     has_succeeded = False
 
     while upper_bound - lower_bound > 2:
-
         found_global_optimum_cnt = 0
 
-        # Initialization
-        population = get_population(population_size, string_size)
-
         for _ in range(NUM_RUNS):
-            # Selection and Recombination
-            children = get_children(population, population_size)
+            # Initialization
+            population = get_population(population_size, string_size)
 
-            # Replacement
-            next_generation = get_next_generation(population, children)
-
-            population = next_generation
+            population = evolve_population(population, population_size)
 
             found_global_optimum_cnt += found_global_optimum(population)
 
-        if found_global_optimum_cnt > 0:
+        if found_global_optimum_cnt == 5:
             # Success
             upper_bound = population_size
             population_size = midpoint(lower_bound, upper_bound)
@@ -52,6 +45,23 @@ def main():
             break
 
     print('Population size: {}'.format(population_size))
+
+
+def evolve_population(population, population_size):
+    """Gets new population while the average fitness has not increased 3 times"""
+    avg_fitness_same_cnt = 0
+    while avg_fitness_same_cnt < 3:
+        # Selection and Recombination
+        children = get_children(population, population_size)
+
+        # Replacement
+        next_generation = get_next_generation(population, children)
+
+        avg_fitness_same_cnt += compare_populations(population, next_generation)
+
+        population = next_generation
+
+    return population
 
 
 def midpoint(p1, p2):
@@ -81,6 +91,7 @@ def get_next_generation(population, children):
 
 
 def found_global_optimum(population):
+    """Returns 1 if the global optimum was found in population"""
     fitnesses = get_fitnesses(population)
     if max(fitnesses) == len(population[0]):
         return 1
