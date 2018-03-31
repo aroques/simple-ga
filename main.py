@@ -15,7 +15,7 @@ def main():
     upper_bound = maxsize
     has_succeeded = False
 
-    while upper_bound - lower_bound > 2:
+    while (upper_bound - lower_bound) > 2:
         found_global_optimum_cnt = 0
 
         for _ in range(NUM_RUNS):
@@ -29,13 +29,13 @@ def main():
         if found_global_optimum_cnt == 5:
             # Success
             upper_bound = population_size
-            population_size = midpoint(lower_bound, upper_bound)
+            population_size = get_new_population_size(lower_bound, upper_bound)
             has_succeeded = True
         else:
             # Failure
             lower_bound = population_size
             if has_succeeded:
-                population_size = midpoint(lower_bound, upper_bound)
+                population_size = get_new_population_size(lower_bound, upper_bound)
             else:
                 population_size *= 2
 
@@ -44,7 +44,7 @@ def main():
             population_size /= 2
             break
 
-    print('Population size: {}'.format(population_size))
+    print('Population size: {}'.format(midpoint(lower_bound, upper_bound)))
 
 
 def evolve_population(population, population_size):
@@ -62,6 +62,14 @@ def evolve_population(population, population_size):
         population = next_generation
 
     return population
+
+
+def get_new_population_size(lower_bound, upper_bound):
+    """Returns population size that is an even midpoint between lower and upper bound"""
+    population_size = midpoint(lower_bound, upper_bound)
+    if population_size % 2 == 1:
+        population_size -= 1
+    return population_size
 
 
 def midpoint(p1, p2):

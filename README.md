@@ -23,8 +23,8 @@ The population size starts at size 10. Then, the GA is ran 5 times and each time
 ### Minimum Population Sizes for Different String Sizes
 | String Size |  Run 1  |  Run 2  |  Run 3  |  Avg   |
 |:-----------:|:-------:|:-------:|:-------:|:------:|
-| 20          | 9       | 7       | 12      | 9.33   |
-| 50          | 14      | 16      | 14      | 14.67  |
+| 20          | 11      | 7       | 13      | 10.33  |
+| 50          | 21      | 19      | 17      | 19.00  |
 
 
 #### To run this program:
