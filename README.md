@@ -9,10 +9,10 @@ A population N of randomly generated binary strings of the specified size n. The
 Parents are selected using binary tournament selection of k=2. So, given a population of size N, a random individual is selected. Then another random individual is selected. The more fit individual is selected as a parent. This procedure is repeated for the second parent.
 
 ### Recombination
-There is a 60% chance that uniform crossover will be applied to those parents to produce two new children for the 'next generation'. Uniform crossover generates the first child by randomly picking from which parent to get each bit. Then, the second child is the inverse (opposite) of the first. Otherwise, there is a 40% chance that the parents will be kept in the 'new generation'.
+There is a 60% chance that uniform crossover will be applied to those parents to produce two new children for the 'next generation'. Uniform crossover generates the first child by randomly picking from which parent to get each bit. At the same time, the second child is created by using the bits from the other of the parent. Otherwise, there is a 40% chance that the parents will be kept in the 'new generation'.
 
 ### Replacement
-For a population of size N, N-2 children are generated. All but the best 2 parents are replaced with this set of children. This is called elitism replacement becuase we are keeping the very best individuals around each generation.
+For a population of size N, N-2 children are generated. All but the best 2 parents are replaced with this set of children. This is called elitism replacement because we are keeping the very best individuals around each generation.
 
 ### Fitness Function
 The fitness function is ***onemax***, which is the sum of 1s in the binary string.

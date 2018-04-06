@@ -162,15 +162,17 @@ def mutate(child):
 def uniform_crossover(parents):
     """Uses uniform crossover to get two children from two parents"""
     string_len = len(parents[0])
-    child = ''
+    child1 = ''
+    child2 = ''
     for i in range(string_len):
         parent_num = randint(0, 1)
-        child += parents[parent_num][i]
-    return child, invert_binary_string(child)
-
-
-def invert_binary_string(binary_string):
-    return ''.join('1' if bit == '0' else '0' for bit in binary_string)
+        if parent_num == 1:
+            other_parent_num = 0
+        else:
+            other_parent_num = 1
+        child1 += parents[parent_num][i]
+        child2 += parents[other_parent_num][i]
+    return child1, child2
 
 
 def get_parents(population):
